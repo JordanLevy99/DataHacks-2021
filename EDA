@@ -1,3 +1,13 @@
+def get_prosperity_scores():
+    """
+    Calculate prosperity score of each country for each year.
+    Returns dataframe w/ pillar score & overall prosperity score
+    """
+    prosperity_data = generate_prosperity()
+    prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
+    return prosperity_data
+
+
 def most_growth_5():
     """
     Gets you the top 5 countries with most growth. 
@@ -8,9 +18,10 @@ def most_growth_5():
     start = 2007
     end = 2014
     
-    prosperity_data = generate_prosperity()
-    pillars = prosperity_data.columns[4:]
-    
+    # prosperity data with prosperity scores
+    prosperity_data = get_prosperity_scores()
+    pillars = ['busi', 'econ', 'educ', 'envi','gove', 'heal', 'pers', 'safe', 'soci']  
+
     # average out all the pillars to get 
     # prosperity score for a country in a certain year
     prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
@@ -35,6 +46,3 @@ def most_growth_5():
     prosperity_data_14["CAGR"] = prosperity_data_14["temp"].apply(lambda x: CAGR(x))
     
     return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
-    
-    
-most_growth_5()
