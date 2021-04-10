@@ -1,3 +1,23 @@
+def dict_of_datasets():
+    """
+    Returns a dictionary of the datasets
+    where key is pillar name and value is the [pillar]_train.csv
+    
+    ---
+    
+    Example run: d = dict_of_datasets(), get busi dataset by d['busi']
+    
+    """
+    d = {}
+    directory = 'Datasets/'
+    for filename in sorted(os.listdir(directory)):
+        if filename.endswith("_train.csv"):
+            name = filename.split("_")[0]
+            d["{0}".format(name)] = pd.read_csv(os.path.join(directory, filename), index_col=0)
+            
+    return d
+
+
 def get_prosperity_scores():
     """
     Calculate prosperity score of each country for each year.
