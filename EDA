@@ -1,32 +1,40 @@
-prosperity_data = generate_prosperity()
-
-pillars = prosperity_data.columns[4:]
-# average out all the pillars to get 
-# prosperity score for a country in a certain year
-prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
-
-start = 2007
-end = 2014
-
-# only keep "end year" and "start year" should it be 2014 or 2016?
-prosperity_data_07= prosperity_data[prosperity_data["year"] == start]
-prosperity_data_14= prosperity_data[prosperity_data["year"] == end]
-
-# calculate the first part of CAGR, Vfinal/Vbegin ** double check
-prosperity_vals = prosperity_data_14.groupby(["isonum"])["prosperity"].mean() / prosperity_data_07.groupby(["isonum"])["prosperity"].mean()
-prosperity_data_14 = prosperity_data_14.merge(prosperity_vals, how="inner", on="isonum")
-prosperity_data_14 = prosperity_data_14.rename(columns={"prosperity_x": "prosperity", "prosperity_y": "temp"})
-
-
-def CAGR(row):
-    c = 1/((end - start)+1)
-    if row > 0:
-        return (row ** c) - 1
-    else:
-        temp = abs(row) ** c
-        return -1 * temp - 1
+def most_growth_5():
+    """
+    Gets you the top 5 countries with most growth. 
+    ---
+    ** May need to change end to 2016 (add on to 
+    generate_prosperity in that case)
+    """
+    start = 2007
+    end = 2014
     
-# calcualte teh second part of CAGR ** double check
-prosperity_data_14["CAGR"] = prosperity_data_14["temp"].apply(lambda x: CAGR(x))
-prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
+    prosperity_data = generate_prosperity()
+    pillars = prosperity_data.columns[4:]
+    
+    # average out all the pillars to get 
+    # prosperity score for a country in a certain year
+    prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
 
+    # filter for "end year" and "start year" should it be 2014 or 2016?
+    prosperity_data_07= prosperity_data[prosperity_data["year"] == start]
+    prosperity_data_14= prosperity_data[prosperity_data["year"] == end]
+
+    # calculate the first part of CAGR, Vfinal/Vbegin ** double check
+    prosperity_data_14["temp"] = prosperity_data_14.prosperity.values / prosperity_data_07.prosperity.values
+
+
+    def CAGR(row):
+        c = 1/((end - start)+1)
+        if row > 0:
+            return (row ** c) - 1
+        else:
+            temp = abs(row) ** c
+            return -1 * temp - 1
+
+    # calculate the second part of CAGR
+    prosperity_data_14["CAGR"] = prosperity_data_14["temp"].apply(lambda x: CAGR(x))
+    
+    return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
+    
+    
+most_growth_5()
