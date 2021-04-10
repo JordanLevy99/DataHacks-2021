@@ -8,6 +8,7 @@ def get_prosperity_scores():
     Example run: prosperity_data = get_prosperity_scores()
     
     """
+    pillars = ['busi', 'econ', 'educ', 'envi','gove', 'heal', 'pers', 'safe', 'soci']  
     prosperity_data = generate_prosperity()
     prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
     return prosperity_data
