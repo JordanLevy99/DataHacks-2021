@@ -58,3 +58,17 @@ def most_growth_5():
     
     return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
     
+def get_most_impact_pillars():
+    """
+    Returns dataframe with column listing the pillar with most
+    impact for each country of each year
+    
+    ---
+    
+    Example run: df = get_most_impact_pillars()
+    
+    """
+    prosperity_data = get_prosperity_scores()
+    pillars = ['busi', 'econ', 'educ', 'envi','gove', 'heal', 'pers', 'safe', 'soci']  
+    prosperity_data["most_impact_pillar"] = prosperity_data[pillars].idxmax(axis=1)
+    return prosperity_data
