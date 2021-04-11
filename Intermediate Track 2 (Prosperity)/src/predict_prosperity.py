@@ -98,6 +98,7 @@ class PredictionModel:
         
         df_16 = df[df.year == 2016]
         df_16["prosperity_rank"] = df_16["prosperity_preds"].rank(ascending=False)
+        df_16 = df_16.sort_values(by="prosperity_rank", ascending=True)
         
         df = df_15.append(df_16)
         
