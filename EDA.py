@@ -196,4 +196,3 @@ def get_impt_cat(pillar, mod):
     get_SHAP_viz(model, X_train, X_test)
     
 
-get_impt_cat("busi", lasso)
