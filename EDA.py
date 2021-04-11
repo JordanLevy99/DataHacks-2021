@@ -164,9 +164,9 @@ def lasso(X_train, y_train, X_test, y_test):
     print("Score of lasso model", clf.score(X_test, y_test))
     return Lreg
 
-def get_SHAP_viz(model, X_train, X_test):
+def make_shap(model, X_train, X_test):
     """
-    Returns bar plot of each categories impact on pillar score
+    Gets shap values of model
     ----
     
     Used in get_impt_cat()
@@ -174,8 +174,53 @@ def get_SHAP_viz(model, X_train, X_test):
     # ***use X_test or X_train?
     explainer = shap.LinearExplainer(model, X_train, feature_dependence="independent")
     shap_values = explainer.shap_values(X_test)
+    return shap_values
+
+
+def shap_viz_1(df_shap,df):
+    """
+    Returns bar plot of each categories impact on pillar score
+    ----
     
-    shap.summary_plot(shap_values, X_test, plot_type="bar")
+    Used in get_impt_cat()
+    """
+    # Make a copy of the input data
+    shap_v = pd.DataFrame(df_shap)
+    feature_list = df.columns
+    shap_v.columns = feature_list
+    df_v = df.copy().reset_index().drop('index',axis=1)
+ 
+    # Determine the correlation in order to plot with different colors
+    corr_list = list()
+    for i in feature_list:
+        #print(shap_v[i],df_v[i])
+        b = np.corrcoef(shap_v[i],df_v[i])[1][0]
+        corr_list.append(b)
+    corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
+    # Make a data frame. Column 1 is the feature, and Column 2 is the correlation coefficient
+    corr_df.columns  = ['Variable','Corr']
+    corr_df['Sign'] = np.where(corr_df['Corr']>0,'lightgreen','red')
+    
+    # Plot it
+    shap_abs = np.abs(shap_v)
+    k=pd.DataFrame(shap_abs.mean()).reset_index()
+    k.columns = ['Variable','SHAP_abs']
+    k2 = k.merge(corr_df,left_on = 'Variable',right_on='Variable',how='inner')
+    k2 = k2.sort_values(by='SHAP_abs',ascending = True)
+    colorlist = k2['Sign']
+    ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(5,6),legend=False)
+    ax.set_xlabel("SHAP Value (Green = Positive Impact, Red = Negative Impact)")
+ 
+    
+def shap_viz_2(shap_values, X_test):
+    """
+    Returns fancy plot of each categories impact on pillar score
+    ----
+    
+    Used in get_impt_cat()
+    """
+    shap.summary_plot(shap_values, X_test)
+
 
 def get_impt_cat(pillar, mod):
     """
@@ -192,7 +237,11 @@ def get_impt_cat(pillar, mod):
     # model 
     model = mod(X_train, y_train, X_test, y_test)
     
-    # ***use X_test or X_train?
-    get_SHAP_viz(model, X_train, X_test)
+    # ***use X_test or X_train?    
+    shap_values = make_shap(model, X_train, X_test)
     
-
+    # viz
+    # easier to understand version of shap_viz_2
+    shap_viz_1(shap_values, X_test)
+    # cooler looking version of shap_viz_1
+    #shap_viz_2(shap_values, X_test)
