@@ -1,0 +1,307 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        
+        <!----------------External Imports Start---------------->
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+        <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+        <link href="https://fonts.googleapis.com/css?family=Unica+One" rel=stylesheet>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+        <!----------------External Imports ---------------->
+
+        <title>Happinesss</title>
+        
+    </head>
+    <style>
+        * {
+            font-family: 'Open Sans', sans-serif;
+        }
+        h1.Title {
+            margin-top: 10vh;
+            margin-bottom: 20vh;
+            text-align: center;
+            font-size: 4vh;
+            letter-spacing: 0.1vw; 
+        }
+        p {
+            margin-right: 10vw;
+            margin-left: 10vw;
+            margin-top: 5vh;
+            margin-bottom: 5vh;
+            font-size: 2vh;
+        }
+        h1.Topsubtitle {
+            margin-top: 100px;
+            margin-bottom:50px;
+            margin-left: 30px;
+            text-align: left;
+            font-size: 50px;
+            text-transform: uppercase;
+            text-decoration-line:underline;
+        }
+        h1.Subtitle {
+            margin-top: 200px;
+            margin-bottom:50px;
+            margin-left: 30px;
+            text-align: left;
+            font-size: 50px;
+            text-transform: uppercase;
+            text-decoration-line:underline;
+        }
+        
+        a.ghost-button {
+            display: inline-block;
+            text-transform: uppercase;
+            width: 200px;
+            padding: 5px;
+            color: black;
+            border: 2px solid black;
+            text-align: center;
+            outline: none;
+            text-decoration: none;
+            transition: background-color 0.2s ease-out,
+                        border-color 0.2s ease-out;
+
+        }
+        a.ghost-button:hover,
+        a.ghost-button:active {
+            color: white;
+            background-color: #fff; /* fallback */
+            background-color: rgba(0, 0, 0, 0.8);
+            border-color:black; /* fallback */
+            border-color: rgba(0, 0, 0, 0.8);
+            transition: background-color 0.3s ease-in,
+                        border-color 0.3s ease-in;
+        }
+        /* .linkedgraphs {
+            margin: 20px;
+            overflow: auto;
+            width: 40%;
+            height: 100%;
+        }  */
+
+        /* #piegroup1, #piegroup2 {
+            display: flex;
+            justify-content: center;
+        } 
+        #piegroup1 div, #piegroup2 div {
+            flex: 1;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .pies {
+            width: 80%;
+            height: 80%;
+        } */
+
+        #linregr {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start; 
+        }
+
+        #linregr div {
+            flex-basis: 0;
+            flex-grow: 50%;
+        } 
+
+        #linregr2 {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #linregr2 div {
+            margin: auto;
+            justify-content: space-around;
+            text-align: center;
+        }
+        #polar, #polar2, #polar3 {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start; 
+        }
+
+        #polar div, #polar2 div {
+            flex-basis: 0;
+            flex-grow: 50%;
+        }
+
+        footer {
+            bottom: 0;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            background-color:black;
+            color: white;
+        }
+    </style>
+    <body>
+        <div id="Top">
+            <a class="ghost-button" href="http://acsweb.ucsd.edu/~ssliang/Code/Cover_Page.html">Introduction</a>
+            <a class="ghost-button" href="http://acsweb.ucsd.edu/~ssliang/Code/Intro_Page.htmll">Viz Story</a>
+        </div>
+
+        <h1 class="Title">FINDING THE KEY TO HAPPINESSs</h1>
+                        
+        <section id="globalmap">
+            <figure id="globalmapchart">
+                <iframe title="" aria-label="World choropleth map" id="datawrapper-chart-YkVQq" src="//datawrapper.dwcdn.net/YkVQq/2/" scrolling="no" frameborder="0" style="width: 0; min-width: 80%; margin-left: 10% !important; border: none;" height="500"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",function(a){if(void 0!==a.data["datawrapper-height"])for(var e in a.data["datawrapper-height"]){var t=document.getElementById("datawrapper-chart-"+e)||document.querySelector("iframe[src*='"+e+"']");t&&(t.style.height=a.data["datawrapper-height"][e]+"px")}})}();
+                </script>
+            </figure>
+            <p> 
+                The highest happiness scores alll seem to be concentrated in North America, 
+                Western Europe and Northern Europe. The lowest happiness scores are mainly concentrated
+                in Central Africa and the Middle East. If we look at these areas a litte more closely,
+                we find that the uhhappiest countries--South Sudan, Central African Republic, and 
+                Afghanistan--are ranked amongst the lowest in GDP per capita scores in 2019. Meanwhile, the 
+                happiest countries--such as Norway, Switzerland, and Canada--are ranked amongst the 
+                highest GDP per capita countries in 2019. So far, these trends suggest that wealth 
+                is an important factor in happiness.  
+            </p>
+        </section>
+        <br>
+        <hr width="800">
+        <!--Heatmap of features correlation-->
+        <section id="heatmapgroup">
+            <p> 
+                <figure id="heatmapct" style="height: 50%; width: 50%; float: left">
+                    <script src="Charts/HeatMap.js"></script>
+                </figure>
+                <br><br>
+            
+                <br><br>
+
+                To better understand the relationships between happiness and GDP,<br>
+                life expectancy, freedom, absense of government corruption, generosity <br> 
+                or social support, I built a heatmap containing Pearson correlation values <br>
+                between each feature and happiness over the years 2015 - 2019. As you <br> 
+                can see, GDP, life expectancy, and social support consistently have the <br>
+                highest correlation with happiness every year. Notice that, on average, GDP <br> 
+                has the strongest correlation with happiness. However, since the correlation <br>
+                values of life expectancy and social support are also very strong at 0.7 - 0.8,<br>
+                we should also analyze the effects these two have on happiness before <br>
+                determining that wealth is the key to happiness.
+            </p>   
+        </section>
+        <br>
+        <hr width="800">
+        <!-- Linear Regression Scatter Plot For all Countries--> 
+        <section id="linregrgroup">
+            <div id="linregr" style="height: 50%; width: 50%; margin-left: 1vw">
+                    <script src="Charts/LinReg.js"></script>
+            </div>
+            <div id="linregr_2" style="height: 50%; width: 50%; margin: auto">
+                <figure id="linregrct">
+                    <script src="Charts/LinReg_2.js"></script>
+                </figure>
+            </div>
+            <p> 
+                Since I want to find the most important factor to happiness, I built a linear regression model 
+                for each of the three features I found to be the most promising to see which feature is the best
+                at predicting happiness. To eliminate any confounding factors between years (like global recession
+                affecting GDP for one year but not the other years), I created the linear regression models
+                on a combination of all the years together instead of doing one for each year. To 
+                compare the strengths of each predictory model, I used RMSE as a evaluation metric. Above, I created
+                three scatterplots to visualize my findings. You can seee that the regression line for GDP looks to 
+                be a better fit than life expectancy or social support. The observations are clustered more tightly
+                around the regression line for GDP than the other features. Indeed, the RMSE of the predicting
+                happiness using GDP is lower than the other two features. 
+
+                The outliers shown in these scatterplots are interesting and worth looking at. For example, 
+                the upper right outlier for GDP's scatterplot is from United Arab Emirates in 2018, who 
+                attributed the GDP the most to their happiness in any given year from 2015 - 2019. Yet, their
+                happiness levels fell below their peers. It is also interesting that observations tend to 
+                cluster more tightly at the high tail of social support levels for the social support 
+                scatterplot. Notice the espically tight cluster at social support levels of 1.5 or greater.
+                This is interesting because it suggests that most of the countries that attribute their 
+                social support network to their happiness
+                highly are very happy.
+
+            </p>
+        </section>
+        <br>
+        <hr width="800">
+        <!--Makeup of Top 5 Countries in 2019-->
+        <section id="groupedcolgroup">
+            <p> 
+                <figure id="groupedcolct" style="height: 50%; width: 50%; float: left">
+                    <script src="Charts/GroupedCol.js"></script>
+                </figure>
+            
+            <br>
+            <br>
+            My linear regression models show that GDP is the most important <br>
+            factor to happiness. However, the cluster trends in the scatterplot <br>
+            for social support motivated me to look more deeply into the happiest <br>
+            countries. What I found is that for the 5 happiest countries of 2019, <br>
+            they all shared a similar feature profile. Just like our previous work <br>
+            suggests, they find gdp, social support and life expectancy to be the <br> most
+            important factors to their happiness. What is really interesting <br> though, is 
+            that they all find social support to be more important to <br> their happiness 
+            than gdp. So while our previous work show that <br> wealth contributes the most
+            to people's happiness, the happiest <br> countries seem to suggest that social 
+            support creates more <br> happiness than wealth.
+        </section> 
+        <br>
+        <hr width="800">
+        <!--Linear Regression Scatter Plot on Top 20 Countries-->
+        <section id="linregr2groups">
+            <figure id="linregr2" style="height: 50%; width: 50%;">
+                <script src="Charts/LinReg2.js"></script>
+            </figure>
+            <p> 
+                So I decided to build predictory models again but this time, only for the top 20 happiest countries of each year. 
+                Using the same evaluation metric, I found that social support is better at predicting happiness levels than 
+                GDP. It seems that while GDP is the most important determinant of happiness for countries overall, social support 
+                is actually the most important determinant of happiness for the happiest countries. To summarize, wealth is 
+                important in being happy but what distinguishes the happiest countries from the rest of the world is that despite 
+                their wealth, they value their family and friends and having a social support network the most. This is consistent 
+                with Maslow’s hierarchy of needs--a psychology theory on happiness--which says that physiological needs need to be 
+                met before one can feel any contentment but once that is achieved, additional happiness can only be gained through 
+                things like feeling loved and having friends and family for support.
+
+
+        </section>
+        <br>
+        <hr width="800">
+        <!--Average Profile of Top 20 Happiest Countries in 2019-->
+        <section id="polargroup">
+            <div id="polar" style="height: 50%; width: 50%; margin-bottom: 5%">
+                <script src="Charts/Polar.js"></script>
+            </div>  
+            
+            <div id="polar2" style="height: 50%; width: 50%; margin-bottom: 5%">
+                <script src="Charts/Polar2.js"></script>
+            </div> 
+            
+            <div id="polar3" style="height: 50%; width: 50%; margin: auto">
+                <script src="Charts/Polar3.js"></script>
+            </div> 
+            <p> 
+                Comparing our own country against the happiest countries of the world, we see that they tend to
+                find social support more important to their happiness than GDP. 
+                Perhaps, we can also find ourselves to be part of the happiest countries if we learn from them. 
+                In the United States, people often take pride in this nation for having a strong economy or having
+                a large degree of freedom. We like to judge our wellbeing by the state of the stock markets, things
+                that have nothing to do with actual people. Yet, while the United States is part of the richest 
+                countries in the world, we are by far from the happiest. Finland and other Nordic countries 
+                are telling us that perhaps we can be happier if we learn to value wealth less. For the United States
+                as a government, policymakers can learn to use citizen's happiness as a metric for our country's wellbeing
+                so that policies that make the average citizen happier instead of making the rich even richer can be passed.
+                For the United States as a people, we can learn to stop basing our happiness on the amount of money we have
+                and learn to find happiness in our family and friends. Perhaps, then we can get closer to being the "great" 
+                country we always claim to be.  
+
+
+            </p> 
+        </section>
+        <footer>Created by: Shiyin Liang</footer>
+    </body>
+</html>
