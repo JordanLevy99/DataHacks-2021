@@ -33,6 +33,7 @@ def get_prosperity_scores():
     prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
     return prosperity_data
 
+###### For finding the top 5 countries with most growth in prosperity ######
 
 def most_growth_5():
     """
@@ -79,6 +80,8 @@ def most_growth_5():
     
     return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
     
+###### For predicting most important pillar for prosperity score for each country of each year ######
+
 def get_most_impact_pillars():
     """
     Returns dataframe with column listing the pillar with most
@@ -93,3 +96,104 @@ def get_most_impact_pillars():
     pillars = ['busi', 'econ', 'educ', 'envi','gove', 'heal', 'pers', 'safe', 'soci']  
     prosperity_data["most_impact_pillar"] = prosperity_data[pillars].idxmax(axis=1)
     return prosperity_data
+
+
+
+###### For predicting impact of categories for each pillar ######
+
+from sklearn.model_selection import train_test_split
+import shap
+import matplotlib.pyplot as plt
+
+
+def remove_star_cols(pillar):
+    """
+    Return list of categories without "***"
+    
+    ----
+    
+    Used in get_impt_cat()
+    """
+    d = dict_of_datasets()
+
+    # categories
+    categories = d[pillar].columns[6:].tolist()
+    categories = [ x for x in categories if "_year" not in x ]
+    new_categories = []
+    
+    # remove all the categories with ***
+    for category in categories:
+        if "***" not in d[pillar][category].unique():
+            new_categories.append(category)
+
+    return new_categories
+
+def get_training_testing_data(pillar):
+    """
+    Returns [pillar] dataset as training and testing dataset.
+    
+    ----
+    
+    Used in get_impt_cat()
+    """
+    
+    d = dict_of_datasets()
+    new_categories = remove_star_cols(pillar)
+    
+    # split into training and testing data
+    x = d[pillar][new_categories]
+    y = d[pillar][pillar]
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+
+    return X_train, X_test, y_train, y_test
+
+def lasso(X_train, y_train, X_test, y_test):
+    """
+    Returns lasso model to be inputted into SHAP explainer.
+    Prints out score of lasso model as well.
+    
+    ----
+    
+    Used in get_impt_cat()
+    """
+    Lreg = linear_model.Lasso(alpha = 0.5)
+    clf = Lreg.fit(X_train, y_train) 
+    
+    # plot predicted values vs true
+    #print(Lreg.predict(X_test))
+    print("Score of lasso model", clf.score(X_test, y_test))
+    return Lreg
+
+def get_SHAP_viz(model, X_train, X_test):
+    """
+    Returns bar plot of each categories impact on pillar score
+    ----
+    
+    Used in get_impt_cat()
+    """
+    # ***use X_test or X_train?
+    explainer = shap.LinearExplainer(model, X_train, feature_dependence="independent")
+    shap_values = explainer.shap_values(X_test)
+    
+    shap.summary_plot(shap_values, X_test, plot_type="bar")
+
+def get_impt_cat(pillar, mod):
+    """
+    Outputs viz of impact of categories.
+    
+    ----
+    
+    Example run: get_impt_cat("busi", lasso)
+    """
+    
+    # split into training and testing dataset
+    X_train, X_test, y_train, y_test = get_training_testing_data(pillar)
+    
+    # model 
+    model = mod(X_train, y_train, X_test, y_test)
+    
+    # ***use X_test or X_train?
+    get_SHAP_viz(model, X_train, X_test)
+    
+
+get_impt_cat("busi", lasso)
