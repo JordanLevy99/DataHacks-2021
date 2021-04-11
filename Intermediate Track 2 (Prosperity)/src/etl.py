@@ -30,7 +30,35 @@ def generate_prosperity():
             prosperity_data = data[['country', 'isonum', 'isocode', 'year', pillar]]
             continue
         prosperity_data = prosperity_data.merge(data[['country', 'year', pillar]], on=['country', 'year'], how='left')
+    ### consider writing to csv, os.mkdir('Processed Data') <-- if not exists...
     return prosperity_data
+
+def read_in_pillars(remove_star=True):
+    train_data = {}
+    test_data = {}
+    fpath = 'Datasets/'
+    for file in sorted(os.listdir(fpath)):
+        if file.startswith('.'): continue
+        pillar = file.split('/')[-1][:4]
+        if 'test' in file:
+            test_data[pillar] = pd.read_csv(fpath+file)
+        elif 'train' in file:
+            train_data[pillar] = pd.read_csv(fpath+file)
+    def remove_star_cols(data):
+        """
+        Return data without columns that only have "***"
+
+        ----
+
+        Used in get_impt_cat()
+        """
+        return {key: data[key].loc[:, ~(data[key].loc[0].apply(lambda x: '***' in str(x)))] for key in data}
+    if remove_star:
+        train_data = remove_star_cols(train_data)
+        test_data = remove_star_cols(test_data)
+    
+    return train_data, test_data
+
 
 
 def most_growth_5():
@@ -45,6 +73,7 @@ def most_growth_5():
 
     ** May need to change end to 2016 (add on to
     generate_prosperity in that case)
+    ** maybe come up with multiple methods of determining growth
     """
     start = 2007
     end = 2014
