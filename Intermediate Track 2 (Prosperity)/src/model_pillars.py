@@ -143,7 +143,7 @@ class PillarExplainer:
         # model and score of model 
         score, model = eval('self.'+self.mod_str)(pillar, X_train, y_train, X_val, y_val)
         #^^utilize score???
-        return model
+        return model, X_train, X_val
     
     def get_models(self):
         for pillar in self.pillars:
@@ -159,7 +159,7 @@ class PillarExplainer:
         Example run: self.get_impt_cat("busi")
         """
 
-        model = self.get_model(pillar)
+        model, X_train, X_val = self.get_model(pillar)
         
         # ***use X_test or X_train?    
         shap_values = self.make_shap(model, X_train, X_val)
