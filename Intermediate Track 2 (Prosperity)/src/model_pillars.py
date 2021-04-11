@@ -15,6 +15,7 @@ class PillarExplainer:
         self.alpha = alpha
         self.mod_str = mod
         self.models = {}
+        self.pillars = list(self.pillar_train.keys())
     
 #     def _remove_star_cols(self, data):
 #         """
@@ -133,6 +134,8 @@ class PillarExplainer:
         """
         shap.summary_plot(shap_values, X_val)
 
+
+        
     def get_model(self, pillar):
         # split into training and testing dataset
         X_train, X_val, y_train, y_val = self.get_train_val(pillar)
@@ -142,6 +145,10 @@ class PillarExplainer:
         #^^utilize score???
         return model
     
+    def get_models(self):
+        for pillar in self.pillars:
+            self.get_model(pillar)
+        print('Done, check self.models')
     
     def get_impt_cat(self, pillar):
         """
