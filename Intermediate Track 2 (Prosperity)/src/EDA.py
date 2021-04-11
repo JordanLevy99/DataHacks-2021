@@ -17,6 +17,20 @@ def dict_of_datasets():
 
      return d
 
+def generate_prosperity():
+    prosperity_data = pd.DataFrame()
+    fpath = 'Datasets/'
+    for file in sorted(os.listdir(fpath)):
+        if file.startswith('.') or 'test' in file: continue
+        # print(fpath+file)
+        data = pd.read_csv(fpath+file)
+        pillar = file.split('/')[-1][:4]
+        if len(prosperity_data) == 0:
+            prosperity_data = data[['country', 'isonum', 'isocode', 'year', pillar]]
+            continue
+        prosperity_data = prosperity_data.merge(data[['country', 'year', pillar]], on=['country', 'year'], how='left')
+    ### consider writing to csv, os.mkdir('Processed Data') <-- if not exists...
+    return prosperity_data
 
  def get_prosperity_scores():
      """
@@ -33,7 +47,31 @@ def dict_of_datasets():
      prosperity_data["prosperity"] = prosperity_data[pillars].mean(axis=1)
      return prosperity_data
 
- ###### For finding the top 5 countries with most growth in prosperity ######
+def read_in_pillars(remove_star=True):
+    train_data = {}
+    test_data = {}
+    fpath = 'Datasets/'
+    for file in sorted(os.listdir(fpath)):
+        if file.startswith('.'): continue
+        pillar = file.split('/')[-1][:4]
+        if 'test' in file:
+            test_data[pillar] = pd.read_csv(fpath+file)
+        elif 'train' in file:
+            train_data[pillar] = pd.read_csv(fpath+file)
+    def remove_star_cols(data):
+        """
+        Return data without columns that only have "***"
+        ----
+        Used in get_impt_cat()
+        """
+        return {key: data[key].loc[:, ~(data[key].loc[0].apply(lambda x: '***' in str(x)))] for key in data}
+    if remove_star:
+        train_data = remove_star_cols(train_data)
+        test_data = remove_star_cols(test_data)
+    
+    return train_data, test_data
+
+ ###### Prompt 2: For finding the top 5 countries with most growth in prosperity ######
 
  def most_growth_5(most=True):
      """
