@@ -35,9 +35,10 @@ def get_prosperity_scores():
 
 ###### For finding the top 5 countries with most growth in prosperity ######
 
-def most_growth_5():
+def most_growth_5(most=True):
     """
-    Gets you the top 5 countries with most growth. 
+    Gets you the top 5 countries with most growth if most is True 
+    or the bottom 5 countries with regressing growth if most is False.
     
     ---
     
@@ -77,8 +78,11 @@ def most_growth_5():
 
     # calculate the second part of CAGR
     prosperity_data_14["CAGR"] = prosperity_data_14["temp"].apply(lambda x: CAGR(x))
+    if most:
+        return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
+    else:
+        return prosperity_data_14.sort_values(by="CAGR", ascending = True)[:5].country.tolist()
     
-    return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
     
 ###### For predicting most important pillar for prosperity score for each country of each year ######
 
