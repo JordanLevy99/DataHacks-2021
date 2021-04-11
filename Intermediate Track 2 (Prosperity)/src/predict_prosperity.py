@@ -87,3 +87,11 @@ class PredictionModel:
         res = res[cols]
         
         return res
+    
+    def determine_ranks(self):
+        
+        df = self.predict_prosperity()
+        
+        df_15 = df[df.year == 2015]
+        df_q5.sort_values()
+        df_16 = df[df.year == 2016]
