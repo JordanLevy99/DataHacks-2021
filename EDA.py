@@ -35,9 +35,10 @@ def get_prosperity_scores():
 
 ###### For finding the top 5 countries with most growth in prosperity ######
 
-def most_growth_5():
+def most_growth_5(most=True):
     """
-    Gets you the top 5 countries with most growth. 
+    Gets you the top 5 countries with most growth if most is True 
+    or the bottom 5 countries with regressing growth if most is False.
     
     ---
     
@@ -77,8 +78,11 @@ def most_growth_5():
 
     # calculate the second part of CAGR
     prosperity_data_14["CAGR"] = prosperity_data_14["temp"].apply(lambda x: CAGR(x))
+    if most:
+        return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
+    else:
+        return prosperity_data_14.sort_values(by="CAGR", ascending = True)[:5].country.tolist()
     
-    return prosperity_data_14.sort_values(by="CAGR", ascending = False)[:5].country.tolist()
     
 ###### For predicting most important pillar for prosperity score for each country of each year ######
 
@@ -245,3 +249,63 @@ def get_impt_cat(pillar, mod):
     shap_viz_1(shap_values, X_test)
     # cooler looking version of shap_viz_1
     #shap_viz_2(shap_values, X_test)
+    
+    
+#### Get dataframe for viz comparison between pillar rate of change for top 5 growing ####
+####    countries and top 5 regressing countries ####
+def top_bottom_growers(top = True):
+    """
+    Returns the changes in pillars for top 5 growing countries if top = True
+    or for bottom 5 growing (regressing) countries if top = False
+    
+    """
+    
+    def pillar_growth_rates(prosperity_data):
+        """
+        Returns the change in each pillar over time 
+
+        ---
+
+        Example run: pillar_growth_rates(df)
+        """
+        start = 2007
+        end = 2014
+
+        prosperity_data = prosperity_data[['country','year', 'busi', 'econ', 'educ', 'envi', 'gove', 'heal', 'pers', 'safe', 'soci']]
+        pillars = ['busi', 'econ', 'educ', 'envi','gove', 'heal', 'pers', 'safe', 'soci']  
+
+        # filter for "end year" and "start year"
+        prosperity_data_07= prosperity_data[prosperity_data["year"] == start]
+        prosperity_data_14= prosperity_data[prosperity_data["year"] == end]
+
+        for pillar in pillars:    
+            # calculate the first part of CAGR, Vfinal/Vbegin 
+            prosperity_data_14["temp"] = prosperity_data_14[pillar].values / prosperity_data_07[pillar].values
+
+
+            def CAGR(row):
+                c = 1/((end - start)+1)
+                if row > 0:
+                    return (row ** c) - 1
+                else:
+                    temp = abs(row) ** c
+                    return -1 * temp - 1
+
+            # calculate the second part of CAGR
+            prosperity_data_14["CAGR_{0}".format(pillar)] = prosperity_data_14["temp"].apply(lambda x: CAGR(x))
+
+        return prosperity_data_14.iloc[:,-9:]
+
+    top_5_growth = most_growth_5()
+    bottom_5_growth = most_growth_5(False)
+    
+    prosperity_data = get_prosperity_scores()
+    
+    top_5_growers = prosperity_data[prosperity_data["country"].isin(top_5_growth)]
+    bottom_5_growers = prosperity_data[prosperity_data["country"].isin(bottom_5_growth)]
+    
+    if top:   
+        return pillar_growth_rates(top_5_growers)
+    else:
+        return pillar_growth_rates(bottom_5_growers)
+  
